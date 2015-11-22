@@ -8,15 +8,15 @@ import java.awt.image.BufferedImage;
  * @author Ilya
  */
 public class ArrayImage {
-    
-    private int w,h;
-    private int[][] arr;
-    private BufferedImage source;
-    
+
+    protected final int w, h;
+    protected final int[][] arr;
+    protected final BufferedImage source;
+
     public ArrayImage(String path) {
         this(FileUtil.readImage(path));
     }
-    
+
     public ArrayImage(BufferedImage image) {
         source = image;
         w = image.getWidth();
@@ -28,10 +28,10 @@ public class ArrayImage {
             }
         }
     }
-    
-   public BufferedImage getBufferedImage() {
-       return source;
-   }
+
+    public BufferedImage getBufferedImage() {
+        return source;
+    }
 
     public int getW() {
         return w;
@@ -44,7 +44,5 @@ public class ArrayImage {
     public int[][] getArr() {
         return arr;
     }
-    
-   
-   
+
 }
