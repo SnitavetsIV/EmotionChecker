@@ -1,6 +1,7 @@
 package com.siv.filter;
 
 import java.awt.image.BufferedImage;
+import java.util.HashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -10,16 +11,17 @@ import java.util.concurrent.locks.ReentrantLock;
 public class FilterManager {
 
     private final ReentrantLock lock = new ReentrantLock();
+    private HashMap<FilterType, Filter> filters = new HashMap<>();
     
-    public BufferedImage apply(BufferedImage image) {
+    public BufferedImage applyFilters(BufferedImage image) {
         return image;
     }
     
-    public void addFilter(FilterType type) {
+    public void addFilter(Filter filter) {
         
     }
     
-    public void removeFilter(FilterType type) {
+    public void removeFilter(Filter filter) {
         
     }
     
