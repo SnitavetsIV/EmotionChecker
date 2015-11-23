@@ -29,14 +29,10 @@ public class Detector {
         stages = new LinkedList<>();
         SAXBuilder sxb = new SAXBuilder();
         try {
-            //On cr�e un nouveau document JDOM avec en argument le fichier XML
-            //Le parsing est termin� ;)
             document = sxb.build(input);
-        } catch (Exception e) {
+        } catch (JDOMException | IOException e) {
             e.printStackTrace();
         }
-
-        //On initialise un nouvel �l�ment racine avec l'�l�ment racine du document.
         racine = (Element) document.getRootElement().getChildren().get(0);
         Scanner scanner = new Scanner(racine.getChild("size").getText());
         size = new Point(scanner.nextInt(), scanner.nextInt());
@@ -80,7 +76,6 @@ public class Detector {
                     Iterator it3 = feature.getChild("feature").getChild("rects").getChildren("_").iterator();
                     while (it3.hasNext()) {
                         String s = ((Element) it3.next()).getText().trim();
-                        //System.out.println(s);
                         Rect r = Rect.fromString(s);
                         f.add(r);
                     }
@@ -88,32 +83,11 @@ public class Detector {
                     t.addFeature(f);
                 }
                 st.addTree(t);
-                //System.out.println("Number of nodes in tree "+t.features.size());
             }
-            //System.out.println("Number of trees : "+ st.trees.size());
             stages.add(st);
         }
-        //System.out.println(stages.size());
     }
 
-    /**
-     * Returns the list of detected objects in an image applying the Viola-Jones
-     * algorithm.
-     *
-     * The algorithm tests, from sliding windows on the image, of variable size,
-     * which regions should be considered as searched objects. Please see
-     * Wikipedia for a description of the algorithm.
-     *
-     * @param image bufferedimage input
-     * @param baseScale The initial ratio between the window size and the Haar
-     * classifier size (default 2).
-     * @param scale_inc The scale increment of the window size, at each step
-     * (default 1.25).
-     * @param increment The shift of the window at each sub-step, in terms of
-     * percentage of the window size.
-     * @return the list of rectangles containing searched objects, expressed in
-     * pixels.
-     */
     public List<java.awt.Rectangle> getFaces(int[][] array, float baseScale, float scale_inc, float increment, int min_neighbors, boolean doCannyPruning) {
         if (array == null || array.length == 0) {
             return null;
@@ -171,7 +145,6 @@ public class Detector {
 
                         if (!s.pass(grayImage, squares, i, j, scale)) {
                             pass = false;
-                            //System.out.println("Failed at Stage "+k);
                             break;
                         }
                         k++;
@@ -181,7 +154,7 @@ public class Detector {
                     }
                 }
             }
-        }
+        }      
         return merge(ret, min_neighbors);
     }
 
@@ -217,7 +190,6 @@ public class Detector {
                 sum += 2 * grayImage[i + 2][j + 2];
 
                 canny[i][j] = sum / 159;
-                //System.out.println(canny[i][j]);
             }
         }
         int[][] grad = new int[grayImage.length][grayImage[0].length];
@@ -226,12 +198,8 @@ public class Detector {
                 int grad_x = -canny[i - 1][j - 1] + canny[i + 1][j - 1] - 2 * canny[i - 1][j] + 2 * canny[i + 1][j] - canny[i - 1][j + 1] + canny[i + 1][j + 1];
                 int grad_y = canny[i - 1][j - 1] + 2 * canny[i][j - 1] + canny[i + 1][j - 1] - canny[i - 1][j + 1] - 2 * canny[i][j + 1] - canny[i + 1][j + 1];
                 grad[i][j] = Math.abs(grad_x) + Math.abs(grad_y);
-                //System.out.println(grad[i][j]);
             }
         }
-        //JFrame f = new JFrame();
-        //f.setContentPane(new DessinChiffre(grad));
-        //f.setVisible(true);
         for (int i = 0; i < canny.length; i++) {
             int col = 0;
             for (int j = 0; j < canny[0].length; j++) {
@@ -260,7 +228,6 @@ public class Detector {
                 nb_classes++;
             }
         }
-        //System.out.println(Arrays.toString(ret));
         int[] neighbors = new int[nb_classes];
         Rectangle[] rect = new Rectangle[nb_classes];
         for (int i = 0; i < nb_classes; i++) {
@@ -290,13 +257,6 @@ public class Detector {
 
     public boolean equals(Rectangle r1, Rectangle r2) {
         int distance = (int) (r1.width * 0.2);
-
-        /*return r2.x <= r1.x + distance &&
-	           r2.x >= r1.x - distance &&
-	           r2.y <= r1.y + distance &&
-	           r2.y >= r1.y - distance &&
-	           r2.width <= (int)( r1.width * 1.2 ) &&
-	           (int)( r2.width * 1.2 ) >= r1.width;*/
         if (r2.x <= r1.x + distance
                 && r2.x >= r1.x - distance
                 && r2.y <= r1.y + distance
@@ -305,9 +265,6 @@ public class Detector {
                 && (int) (r2.width * 1.2) >= r1.width) {
             return true;
         }
-        if (r1.x >= r2.x && r1.x + r1.width <= r2.x + r2.width && r1.y >= r2.y && r1.y + r1.height <= r2.y + r2.height) {
-            return true;
-        }
-        return false;
+        return r1.x >= r2.x && r1.x + r1.width <= r2.x + r2.width && r1.y >= r2.y && r1.y + r1.height <= r2.y + r2.height;
     }
 }

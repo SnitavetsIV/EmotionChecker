@@ -3,6 +3,7 @@ package com.siv.ui;
 import com.siv.filter.FaceFilter;
 import com.siv.filter.FilterType;
 import com.siv.filter.GrayFilter;
+import com.siv.filter.MedianFilter;
 
 public class CameraFrame extends javax.swing.JFrame {
 
@@ -146,11 +147,11 @@ public class CameraFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_videoButtonActionPerformed
 
     private void medianButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_medianButtonActionPerformed
-        /*if (jToggleButton1.isSelected()) {
+        if (medianButton.isSelected()) {
             displayer.addFilter(new MedianFilter((int) jSpinner1.getValue()));
         } else {
-            displayer.removeFilter("median");
-        }*/
+            displayer.removeFilter(FilterType.MEDIAN);
+        }
     }//GEN-LAST:event_medianButtonActionPerformed
 
     private void grayButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_grayButtonActionPerformed

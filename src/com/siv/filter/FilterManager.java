@@ -18,12 +18,16 @@ public class FilterManager {
         int[][] imageArr = convertImageToArray(image);
         lock.lock();
         try {
+            long l = System.currentTimeMillis();
             for (Filter f : filters.values()) {
                 imageArr = f.applyFilter(imageArr);
             }
+            System.out.println("Time filtes = " + (System.currentTimeMillis() - l) + "ms");
+            l = System.currentTimeMillis();
             if (faceFilter != null) {
                 imageArr = faceFilter.applyFilter(imageArr);
             }
+            System.out.println("Time faces detect = " + (System.currentTimeMillis() - l) + "ms");
         } finally {
             lock.unlock();
         }

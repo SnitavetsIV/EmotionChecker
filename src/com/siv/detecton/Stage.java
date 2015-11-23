@@ -1,17 +1,15 @@
 package com.siv.detecton;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.ArrayList;
 
 public class Stage {
 
-    List<Tree> trees;
+    ArrayList<Tree> trees;
     float threshold;
 
     public Stage(float threshold) {
         this.threshold = threshold;
-        trees = new LinkedList<Tree>();
-//features = new LinkedList<Feature>();
+        trees = new ArrayList<>();
     }
 
     public void addTree(Tree t) {
@@ -21,11 +19,8 @@ public class Stage {
     public boolean pass(int[][] grayImage, int[][] squares, int i, int j, float scale) {
         float sum = 0;
         for (Tree t : trees) {
-
-            //System.out.println("Returned value :"+t.getVal(grayImage, squares,i, j, scale));
             sum += t.getVal(grayImage, squares, i, j, scale);
         }
-        //System.out.println(sum+" "+threshold);
         return sum > threshold;
     }
 

@@ -18,7 +18,7 @@ public class FaceFilter implements Filter {
     public int[][] applyFilter(int[][] image) {
         try {
             Detector d = new Detector("resources\\haarcascade_frontalface_default.xml");
-            List<Rectangle> faces = d.getFaces(image, 1, 1.25f, 0.1f, 1, false);
+            List<Rectangle> faces = d.getFaces(image, 1, 1.25f, 0.1f, 1, true);
             for (Rectangle r : faces) {
                 for (int x = r.x; x <= r.x + r.width; x++) {
                     image[r.y][x] = Color.black.getRGB();
