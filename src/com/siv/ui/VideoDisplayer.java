@@ -1,5 +1,6 @@
 package com.siv.ui;
 
+import com.siv.filter.Filter;
 import com.siv.filter.FilterManager;
 import com.siv.filter.FilterType;
 import java.awt.image.BufferedImage;
@@ -58,7 +59,7 @@ public class VideoDisplayer {
                     img = grabber.grab();
                     if (img != null) {
                         BufferedImage image = CONVERTER.convert(img);
-                        image = filterManager.apply(image);
+                        image = filterManager.applyFilters(image);
                         videoOut.setIcon(new ImageIcon(image));
                     }
                 }
@@ -81,8 +82,8 @@ public class VideoDisplayer {
 
     }
 
-    public void addFilter(FilterType type) {
-        filterManager.addFilter(type);
+    public void addFilter(Filter filter) {
+        filterManager.addFilter(filter);
     }
 
     public void removeFilter(FilterType type) {

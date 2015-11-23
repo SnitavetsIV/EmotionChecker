@@ -4,18 +4,10 @@ package com.siv.filter;
  *
  * @author Ilya
  */
-public abstract class Filter {
-    
-    private FilterType type;
+public interface Filter {
 
-    public FilterType getType() {
-        return type;
-    }
-
-    public void setType(FilterType type) {
-        this.type = type;
-    }
+    FilterType getType();
     
-    public abstract int[][] applyFilter(int[][] image);
+    int[][] applyFilter(int[][] image);
     
 }
