@@ -1,5 +1,6 @@
 package com.siv.detecton;
 
+import com.siv.filter.FaceFilter;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.awt.Point;
@@ -13,6 +14,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Iterator;
 import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Detector {
 
@@ -88,7 +94,7 @@ public class Detector {
         }
     }
 
-    public List<java.awt.Rectangle> getFaces(int[][] array, float baseScale, float scale_inc, float increment, int min_neighbors, boolean doCannyPruning) {
+    public List<java.awt.Rectangle> getFaces(int[][] array, float baseScale, float scale_inc, final float increment, int min_neighbors, boolean doCannyPruning) {
         if (array == null || array.length == 0) {
             return null;
         }
@@ -123,38 +129,47 @@ public class Detector {
                 col2 += value * value;
             }
         }
-        int[][] canny = null;
+        int[][] canny1 = null;
         if (doCannyPruning) {
-            canny = getIntegralCanny(img);
+            canny1 = getIntegralCanny(img);
         }
-        for (float scale = baseScale; scale < maxScale; scale *= scale_inc) {
-            int step = (int) (scale * 24 * increment);
-            int size = (int) (scale * 24);
-            for (int i = 0; i < width - size; i += step) {
-                for (int j = 0; j < height - size; j += step) {
-                    if (doCannyPruning) {
-                        int edges_density = canny[i + size][j + size] + canny[i][j] - canny[i][j + size] - canny[i + size][j];
-                        int d = edges_density / size / size;
-                        if (d < 20 || d > 100) {
-                            continue;
+        ExecutorService service = Executors.newFixedThreadPool(10);
+        for (float scale1 = baseScale; scale1 < maxScale; scale1 *= scale_inc) {
+            final float scale = scale1;
+            final int[][] canny = canny1;
+            service.submit(() -> {
+                int step = (int) (scale * 24 * increment);
+                int size1 = (int) (scale * 24);
+                for (int i = 0; i < width - size1; i += step) {
+                    for (int j = 0; j < height - size1; j += step) {
+                        if (doCannyPruning) {
+                            int edges_density = canny[i + size1][j + size1] + canny[i][j] - canny[i][j + size1] - canny[i + size1][j];
+                            int d = edges_density / size1 / size1;
+                            if (d < 20 || d > 100) {
+                                continue;
+                            }
                         }
-                    }
-                    boolean pass = true;
-                    int k = 0;
-                    for (Stage s : stages) {
-
-                        if (!s.pass(grayImage, squares, i, j, scale)) {
-                            pass = false;
-                            break;
+                        boolean pass = true;
+                        for (Stage s : stages) {
+                            if (!s.pass(grayImage, squares, i, j, scale)) {
+                                pass = false;
+                                break;
+                            }
                         }
-                        k++;
-                    }
-                    if (pass) {
-                        ret.add(new Rectangle(i, j, size, size));
+                        if (pass) {
+                            ret.add(new Rectangle(i, j, size1, size1));
+                        }
                     }
                 }
-            }
-        }      
+            });
+
+        }
+        service.shutdown();
+        try {
+            service.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+        } catch (InterruptedException e) {
+            Logger.getLogger(Detector.class.getName()).log(Level.SEVERE, null, e);
+        }
         return merge(ret, min_neighbors);
     }
 

@@ -8,7 +8,9 @@ public enum FilterType {
     
     GRAY,
     MEDIAN,
+    GAUS,
     CANNY,
-    FACE_DETECTION
+    CLARITY,
+    FACE_DETECTION,
     
 }
