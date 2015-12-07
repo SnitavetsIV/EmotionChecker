@@ -17,12 +17,12 @@ public class GrayFilter implements Filter {
                 value = image[y][x];
                 final int rr = (value << 8) >>> 24;
                 final int gg = (value << 16) >>> 24;
-                final int bb = (value << 24) >>> 24; 
-                final int gray =(int) ((0.2125 * rr) + (0.7154 * gg) + (0.0721 * bb));
-                final int color = ((255 & 0xFF) << 24) |
-                ((gray & 0xFF) << 16) |
-                ((gray & 0xFF) << 8)  |
-                ((gray & 0xFF));
+                final int bb = (value << 24) >>> 24;
+                final int gray = (int) ((0.2125 * rr) + (0.7154 * gg) + (0.0721 * bb));
+                final int color = ((255 & 0xFF) << 24)
+                        | ((gray & 0xFF) << 16)
+                        | ((gray & 0xFF) << 8)
+                        | ((gray & 0xFF));
                 res[y][x] = color;
             }
         }
@@ -33,5 +33,5 @@ public class GrayFilter implements Filter {
     public FilterType getType() {
         return FilterType.GRAY;
     }
-    
+
 }

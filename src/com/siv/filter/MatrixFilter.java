@@ -15,16 +15,16 @@ import java.awt.Color;
 public abstract class MatrixFilter implements Filter {
 
     public abstract double[][] getMatrix();
-    
-    public abstract int getWindow(); 
-    
+
+    public abstract int getWindow();
+
     @Override
     public int[][] applyFilter(int[][] image) {
         final int w = getWindow();
         final double[][] matrix = getMatrix();
-        
+
         image = MatrixUtil.increaseSize(image, w);
-        
+
         final int height = image.length;
         final int width = image[0].length;
         final int w2 = w / 2;

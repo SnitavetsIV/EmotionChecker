@@ -7,17 +7,17 @@ import java.util.Arrays;
  *
  * @author Ilya
  */
-public class MedianFilter implements Filter{
+public class MedianFilter implements Filter {
 
     private int w = 3;
-    
+
     public MedianFilter() {
     }
-    
+
     public MedianFilter(int w) {
         this.w = w;
     }
-    
+
     @Override
     public FilterType getType() {
         return FilterType.MEDIAN;
@@ -25,7 +25,7 @@ public class MedianFilter implements Filter{
 
     @Override
     public int[][] applyFilter(int[][] image) {
-        
+
         image = MatrixUtil.increaseSize(image, w);
         final int height = image.length;
         final int width = image[0].length;
@@ -50,5 +50,5 @@ public class MedianFilter implements Filter{
         }
         return MatrixUtil.decreaseSize(res, w);
     }
-    
+
 }

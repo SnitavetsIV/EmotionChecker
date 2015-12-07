@@ -7,7 +7,7 @@ package com.siv.filter;
 public interface Filter {
 
     FilterType getType();
-    
+
     int[][] applyFilter(int[][] image);
-    
+
 }

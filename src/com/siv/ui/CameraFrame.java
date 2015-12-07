@@ -9,9 +9,8 @@ import com.siv.filter.MedianFilter;
 
 public class CameraFrame extends javax.swing.JFrame {
 
-    
     private final VideoDisplayer displayer;
-    
+
     public CameraFrame() {
         initComponents();
         displayer = new VideoDisplayer(jLabel1);
@@ -210,7 +209,6 @@ public class CameraFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_clarityButtonActionPerformed
 
-    
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">

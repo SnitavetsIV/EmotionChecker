@@ -19,7 +19,7 @@ public class VideoDisplayer {
     private VideoThread videoThread;
     private final Java2DFrameConverter CONVERTER = new Java2DFrameConverter();
     private final FilterManager filterManager;
-    
+
     public VideoDisplayer(JLabel videoOut) {
         filterManager = new FilterManager();
         this.videoOut = videoOut;

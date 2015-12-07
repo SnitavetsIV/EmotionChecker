@@ -1,6 +1,5 @@
 package com.siv.detecton;
 
-import com.siv.filter.FaceFilter;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.awt.Point;

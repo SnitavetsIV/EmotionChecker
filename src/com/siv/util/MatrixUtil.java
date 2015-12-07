@@ -5,7 +5,7 @@ package com.siv.util;
  * @author Ilya
  */
 public class MatrixUtil {
-    
+
     public static int[][] increaseSize(int[][] image, int w) {
 
         int[][] ar = image;
@@ -56,5 +56,5 @@ public class MatrixUtil {
         }
         return res;
     }
-    
+
 }
