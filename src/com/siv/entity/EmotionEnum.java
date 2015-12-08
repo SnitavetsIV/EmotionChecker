@@ -7,11 +7,9 @@ package com.siv.entity;
 public enum EmotionEnum {
 
     Anger(0),
-    Contempt(1),
     Disgust(2),
     Fear(3),
     Happiness(4),
-    Neutral(5),
     Sadness(6),
     Surprise(7);
 

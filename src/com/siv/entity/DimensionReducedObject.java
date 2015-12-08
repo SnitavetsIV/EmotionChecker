@@ -30,21 +30,20 @@ public class DimensionReducedObject {
 
     protected float[] m_array;
     protected float[] m_reduced;
-    
+
     private BufferedImage image;
 
     public DimensionReducedObject(FacialImage facialImage, int numFeatures) {
         m_reduced = null;
         m_numFeatures = numFeatures;
 
-        BufferedImage src = facialImage.getGreyImage();
+        BufferedImage src = facialImage.getGreyImage1();
 
         Vector<BufferedImage> bvec = new Vector<>();
         double thetas[] = new double[]{
             Math.PI / 8, Math.PI / 4, 3 * Math.PI / 8, Math.PI / 2, 5 * Math.PI / 8,
             3 * Math.PI / 4
         };
-
         for (int i = 0; i < numGaborImages; i++) {
             int exp = 1;
             for (int j = 0; j < numGaborImages; j++) {
@@ -54,7 +53,7 @@ public class DimensionReducedObject {
                 exp *= 2;
                 double k = 2 * Math.PI / src.getWidth() * exp;
                 GaborFilter g = new GaborFilter(k,
-                        new double[]{k * Math.cos(thetas[i]), k * Math.sin(thetas[i])});
+                        new double[]{k * Math.sin(thetas[i]), k * Math.cos(thetas[i])});
 
                 g.filter(src, b);
                 bvec.add(b);
@@ -64,7 +63,7 @@ public class DimensionReducedObject {
         // Form an array from the down-sampled images.
         m_array = new float[numGaborSamples];
         int arrayCounter = 0;
-
+        BufferedImage image1 = facialImage.getOut();
         for (int i = 0; i < numGaborImages * numGaborImages; i++) {
             BufferedImage scaled = new BufferedImage(
                     resizeX, resizeY, BufferedImage.TYPE_BYTE_GRAY);
@@ -75,7 +74,7 @@ public class DimensionReducedObject {
 
             graphics.drawImage(bvec.get(i), 0, 0, resizeX, resizeY, null);
             graphics.dispose();
-            
+
             int[] rgb = new int[scaled.getWidth() * scaled.getHeight()];
             scaled.getRGB(0, 0, scaled.getWidth(), scaled.getHeight(), rgb,
                     0, scaled.getWidth());
@@ -89,8 +88,34 @@ public class DimensionReducedObject {
                 }
             }
         }
-               
-        image = facialImage.getOut();
+
+        BufferedImage src1 = facialImage.getImage();
+        for (int i = 0; i < numGaborImages * numGaborImages; i++) {
+            for (int x = 0; x < bvec.get(i).getWidth() - 13; x+=4) {
+                for (int y = 0; y < bvec.get(i).getHeight() - 13; y+=4) {
+
+                    int max = 0;
+                    int xxx = 0;
+                    int yyy = 0;
+
+                    for (int xx = 0; xx < 13; xx++) {
+                        for (int yy = 0; yy < 13; yy++) {
+                            int rgb = bvec.get(i).getRGB(x + xx, y + yy);
+                            if ((rgb & 0x000000ff) > max) {
+                                max = rgb & 0x000000ff;
+                                xxx = x + xx;
+                                yyy = y + yy;
+                            }
+                        }
+                    }
+
+                    //if (max > 200) {
+                        src1.setRGB(xxx, yyy, Color.RED.getRGB());
+                   // }
+                }
+            }
+        }
+        image = src1;
     }
 
     public DimensionReducedObject(float[] array, int numFeatures) {

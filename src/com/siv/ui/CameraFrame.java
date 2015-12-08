@@ -1,8 +1,14 @@
 package com.siv.ui;
 
+import com.siv.detecton.ExecuteRecognitionApplication;
+import com.siv.detecton.FormatResult;
+import com.siv.detecton.NeuralNetworkTypeException;
+import com.siv.detecton.db.DatabaseFormatter;
+import com.siv.detecton.db.DatabaseParserException;
 import com.siv.entity.DimensionReducedObject;
 import com.siv.entity.FacialImage;
 import com.siv.entity.ImageConversionException;
+import com.siv.entity.MouthImage;
 import com.siv.filter.ClarityFilter;
 import com.siv.filter.FaceFilter;
 import com.siv.filter.FilterType;
@@ -10,12 +16,16 @@ import com.siv.filter.GausFilter;
 import com.siv.filter.GrayFilter;
 import com.siv.filter.MedianFilter;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
+import javax.media.jai.JAI;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -45,6 +55,7 @@ public class CameraFrame extends javax.swing.JFrame {
         clarityButton = new javax.swing.JToggleButton();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -124,6 +135,11 @@ public class CameraFrame extends javax.swing.JFrame {
         });
 
         jButton2.setText("Emotions");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -165,6 +181,8 @@ public class CameraFrame extends javax.swing.JFrame {
                 .addContainerGap(171, Short.MAX_VALUE))
         );
 
+        jLabel2.setText("jLabel2");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -172,20 +190,29 @@ public class CameraFrame extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap())
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(182, 182, 182)
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 418, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 14, Short.MAX_VALUE)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
         );
 
         pack();
@@ -244,26 +271,90 @@ public class CameraFrame extends javax.swing.JFrame {
         fileopen.setFileFilter(new FileNameExtensionFilter("Image Files", "jpg", "png"));
         int ret = fileopen.showDialog(null, "Открыть файл");
         if (ret == JFileChooser.APPROVE_OPTION) {
+        try {
+            File file = /*new File("H:\\Projects\\java-emotion-recognizer\\1.png");*/ fileopen.getSelectedFile();
+            BufferedImage in = ImageIO.read(file);
+            BufferedImage newImage = new BufferedImage(
+                    in.getWidth(), in.getHeight(), BufferedImage.TYPE_INT_ARGB);
+
+            Graphics2D g = newImage.createGraphics();
+            g.drawImage(in, 0, 0, null);
+            g.dispose();
+            FacialImage facialImage = new FacialImage(newImage);
+
+            DimensionReducedObject dimReduced
+                    = new DimensionReducedObject(facialImage, 0);
+
+            jLabel1.setIcon(new ImageIcon(dimReduced.getImage()));
+        } catch (IOException | ImageConversionException ex) {
+            Logger.getLogger(CameraFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private static final int m_width = 25;
+    private static final int m_height = 16;
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        JFileChooser fileopen = new JFileChooser();
+        fileopen.setFileFilter(new FileNameExtensionFilter("Image Files", "jpg", "png"));
+        //int ret = fileopen.showDialog(null, "Открыть файл");
+        if (0 == JFileChooser.APPROVE_OPTION || true) {
+
             try {
-                File file = fileopen.getSelectedFile();
-                BufferedImage in = ImageIO.read(file);
-                BufferedImage newImage = new BufferedImage(
-                        in.getWidth(), in.getHeight(), BufferedImage.TYPE_INT_ARGB);
-                
-                Graphics2D g = newImage.createGraphics();
-                g.drawImage(in, 0, 0, null);
-                g.dispose();
-                FacialImage facialImage = new FacialImage(newImage);
-                
-                DimensionReducedObject dimReduced =
-                new DimensionReducedObject(facialImage, 0);
-                
-                jLabel1.setIcon(new ImageIcon(dimReduced.getImage()));
-            } catch (IOException | ImageConversionException ex) {
+                BufferedImage src
+                        = JAI.create("fileload", "H:\\Projects\\java-emotion-recognizer\\Images\\4Happy\\10.jpg").getAsBufferedImage();
+
+                // Scale the image.
+                BufferedImage scaled = new BufferedImage(
+                        m_width, m_height, BufferedImage.TYPE_INT_RGB);
+                Graphics2D graphics = scaled.createGraphics();
+                graphics.setRenderingHint(
+                        RenderingHints.KEY_INTERPOLATION,
+                        RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+                graphics.drawImage(src, 0, 0, m_width, m_height, null);
+                graphics.dispose();
+
+                // Normalize.
+                int[] rgb = new int[m_width * m_height];
+                float[] normal = new float[m_width * m_height];
+                scaled.getRGB(0, 0, m_width, m_height, rgb, 0, m_width);
+
+                for (int y = 0; y < m_height; y++) {
+                    for (int x = 0; x < m_width; x++) {
+                        int index = y * m_width + x;
+
+                        int R = (rgb[index] >> 16) & 0xff;
+                        int G = (rgb[index] >> 8) & 0xff;
+                        int B = rgb[index] & 0xff;
+
+                        float intensity = ((R + G + B) / (255.0f * 3)) * 2.0f - 1.0f;
+                        normal[index] = intensity;
+                    }
+                }
+
+                // And write the result.
+                DimensionReducedObject dimReduced
+                        = new DimensionReducedObject(normal, 4);
+
+                DatabaseFormatter formatter
+                        = new DatabaseFormatter(0, dimReduced);
+
+                try (FileWriter fw = new FileWriter(new File("temp.dat"))) {
+                    fw.write(formatter.databaseEncoding());
+                    fw.flush();
+                }
+                ExecuteRecognitionApplication sub = new ExecuteRecognitionApplication("backprop", "training.dat",
+                        "temp.dat", 14, 400);
+                sub.run();
+                FormatResult r = sub.f;
+                jLabel2.setText(r.toString());
+                jLabel1.setIcon(new ImageIcon(src));
+            } catch (IOException | NeuralNetworkTypeException | DatabaseParserException ex) {
                 Logger.getLogger(CameraFrame.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
@@ -303,6 +394,7 @@ public class CameraFrame extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JSpinner jSpinner1;

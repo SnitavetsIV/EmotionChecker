@@ -162,6 +162,19 @@ public class FacialImage {
         cop.filter(image, imageAverage);
         return imageAverage;
     }
+    
+    public BufferedImage getGreyImage1() {
+        BufferedImage reduced = new BufferedImage(
+                m_faceImage.getWidth(), m_faceImage.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
+        Graphics2D graphics = reduced.createGraphics();
+        graphics.setRenderingHint(
+                RenderingHints.KEY_INTERPOLATION,
+                RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        graphics.drawImage(m_faceImage, 0, 0, m_faceImage.getWidth(), m_faceImage.getHeight(), null);
+        graphics.dispose();
+
+        return reduced;
+    }
 
     private static void threshold(BufferedImage image) {
         int[] rgb = new int[image.getWidth() * image.getHeight()];
