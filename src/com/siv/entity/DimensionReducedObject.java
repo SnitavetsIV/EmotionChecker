@@ -30,6 +30,8 @@ public class DimensionReducedObject {
 
     protected float[] m_array;
     protected float[] m_reduced;
+    
+    private BufferedImage image;
 
     public DimensionReducedObject(FacialImage facialImage, int numFeatures) {
         m_reduced = null;
@@ -87,6 +89,8 @@ public class DimensionReducedObject {
                 }
             }
         }
+               
+        image = facialImage.getOut();
     }
 
     public DimensionReducedObject(float[] array, int numFeatures) {
@@ -196,5 +200,9 @@ public class DimensionReducedObject {
     // until PCA is done by the below static.
     public float[] getReducedArray() {
         return (m_reduced == null) ? m_array : m_reduced;
+    }
+
+    public BufferedImage getImage() {
+        return image;
     }
 }

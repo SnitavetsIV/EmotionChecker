@@ -29,16 +29,16 @@ public class FaceFilter implements Filter {
         List<Rectangle> faces = detector.getFaces(image, 1, 1.25f, 0.09f, 2, true);
         for (Rectangle r : faces) {
             for (int x = r.x; x <= r.x + r.width; x++) {
-                image[r.y][x] = Color.black.getRGB();
+                image[r.y][x] = Color.white.getRGB();
             }
             for (int x = r.x; x <= r.x + r.width; x++) {
-                image[r.y + r.height][x] = Color.black.getRGB();
+                image[r.y + r.height][x] = Color.white.getRGB();
             }
             for (int y = r.y; y <= r.y + r.height; y++) {
-                image[y][r.x] = Color.black.getRGB();
+                image[y][r.x] = Color.white.getRGB();
             }
             for (int y = r.y; y <= r.y + r.height; y++) {
-                image[y][r.x + r.width] = Color.black.getRGB();
+                image[y][r.x + r.width] = Color.white.getRGB();
             }
         }
         return image;

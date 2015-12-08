@@ -22,6 +22,8 @@ public class FacialImage {
     // A cropped 3-channel image (only the face).
     protected BufferedImage m_faceImage;
 
+    private BufferedImage out;
+    
     // -------------------------------------------------------------------------
     // Apply averaging filter to an image.
     // -------------------------------------------------------------------------
@@ -130,6 +132,11 @@ public class FacialImage {
 
         m_faceImage = scaled.getSubimage(minX, minY, maxX - minX + 1,
                 maxY - minY + 1);
+        
+        Graphics2D graphics1 = (Graphics2D) scaled.getGraphics();
+        graphics1.drawRect(minX, minY, maxX - minX + 1, maxY - minY + 1);
+        graphics1.dispose();
+        out = scaled;
     }
 
     // -------------------------------------------------------------------------
@@ -211,4 +218,9 @@ public class FacialImage {
             // Nothing.
         }
     }
+
+    public BufferedImage getOut() {
+        return out;
+    }
+    
 }
